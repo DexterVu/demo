@@ -107,10 +107,33 @@ export class MenuService {
       // check exist
       const checkMenu = await queryRunner.manager.findOne(
         this.repository.metadata.tableName,
-        { where: { id } },
+        {
+          where: { id },
+          select: {
+            id: true,
+            name: true,
+            parentId: true,
+          },
+        },
       );
       if (!checkMenu) {
         throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      // check conflict
+      const checkMenuConflict = await queryRunner.manager.findOne(
+        this.repository.metadata.tableName,
+        {
+          where: {
+            name: updateMenuDTO.name ? updateMenuDTO.name : checkMenu.name,
+            parentId: updateMenuDTO.parentId
+              ? updateMenuDTO.parentId
+              : checkMenu.parentId,
+          },
+        },
+      );
+      if (checkMenuConflict) {
+        throw new HttpException(MessError.MENU_CONFLICT, HttpStatus.CONFLICT);
       }
 
       // update menu
