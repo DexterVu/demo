@@ -30,6 +30,7 @@ export class MenuService {
         throw new HttpException(MessError.MENU_CONFLICT, HttpStatus.CONFLICT);
       }
 
+      // create menu
       const dataMenu = new Menu();
       _.assign(dataMenu, createMenuDTO);
       const menu = await queryRunner.manager.save(dataMenu);
@@ -72,6 +73,7 @@ export class MenuService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      // check exist
       const checkMenu = await queryRunner.manager.findOne(
         this.repository.metadata.tableName,
         { where: { id } },
@@ -80,6 +82,7 @@ export class MenuService {
         throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
 
+      // delete menu
       const menu = await queryRunner.manager.delete(
         this.repository.metadata.tableName,
         { id },
@@ -101,6 +104,7 @@ export class MenuService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      // check exist
       const checkMenu = await queryRunner.manager.findOne(
         this.repository.metadata.tableName,
         { where: { id } },
@@ -109,6 +113,7 @@ export class MenuService {
         throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
 
+      // update menu
       const menu = await queryRunner.manager.update(
         this.repository.metadata.tableName,
         { id },
