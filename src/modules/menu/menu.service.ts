@@ -81,8 +81,6 @@ export class MenuService {
 
       return menu;
     } catch (error) {
-      console.log(error);
-
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
@@ -113,7 +111,6 @@ export class MenuService {
 
       return menu;
     } catch (error) {
-      console.log(error);
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();

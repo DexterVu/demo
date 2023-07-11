@@ -29,7 +29,6 @@ export class MenuController {
 
   @Put(':id')
   async update(@Param('id') id: string, @Body() updateMenuDTO: UpdateMenuDTO) {
-    console.log(id, 999);
     return this.menuServie.update(id, updateMenuDTO);
   }
 
