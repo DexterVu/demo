@@ -21,16 +21,24 @@ export class MenuService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
-      // create menu
+      // check exist
+      const checkMenu = await queryRunner.manager.findOne(
+        this.repository.metadata.tableName,
+        { where: createMenuDTO },
+      );
+      if (checkMenu) {
+        throw new HttpException(MessError.MENU_CONFLICT, HttpStatus.CONFLICT);
+      }
+
       const dataMenu = new Menu();
       _.assign(dataMenu, createMenuDTO);
       const menu = await queryRunner.manager.save(dataMenu);
 
       await queryRunner.commitTransaction();
-
       return menu;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      throw error;
     } finally {
       await queryRunner.release();
     }
@@ -59,18 +67,18 @@ export class MenuService {
   }
 
   async delete(id: string) {
-    const checkMenu = await this.repository.findOne({
-      where: { id },
-    });
-
-    if (!checkMenu) {
-      throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-
     const queryRunner = this.connection.createQueryRunner();
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
+
+      const checkMenu = await queryRunner.manager.findOne(
+        this.repository.metadata.tableName,
+        { where: { id } },
+      );
+      if (!checkMenu) {
+        throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
 
       const menu = await queryRunner.manager.delete(
         this.repository.metadata.tableName,
@@ -78,28 +86,28 @@ export class MenuService {
       );
 
       await queryRunner.commitTransaction();
-
       return menu;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      throw error;
     } finally {
       await queryRunner.release();
     }
   }
 
   async update(id: string, updateMenuDTO: UpdateMenuDTO) {
-    const checkMenu = await this.repository.findOne({
-      where: { id },
-    });
-
-    if (!checkMenu) {
-      throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-
     const queryRunner = this.connection.createQueryRunner();
     try {
       await queryRunner.connect();
       await queryRunner.startTransaction();
+
+      const checkMenu = await queryRunner.manager.findOne(
+        this.repository.metadata.tableName,
+        { where: { id } },
+      );
+      if (!checkMenu) {
+        throw new HttpException(MessError.MENU_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
 
       const menu = await queryRunner.manager.update(
         this.repository.metadata.tableName,
@@ -108,10 +116,10 @@ export class MenuService {
       );
 
       await queryRunner.commitTransaction();
-
       return menu;
     } catch (error) {
       await queryRunner.rollbackTransaction();
+      throw error;
     } finally {
       await queryRunner.release();
     }
